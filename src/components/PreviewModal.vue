@@ -1,10 +1,16 @@
 <script setup>
-import { isPreviewOpen, previewUrl, closePreview } from '../composables/usePdfState'
+import { PhFilePdf, PhX, PhDownloadSimple } from '@phosphor-icons/vue'
+import { isPreviewOpen, previewUrl, closePreview, isGeneratingPdf } from '../composables/usePdfState'
 import { pdfMode } from '../composables/useAppState'
 
 async function handleDownload() {
-  const { downloadPdf } = await import('../composables/usePdfExport')
-  downloadPdf(pdfMode.value)
+  isGeneratingPdf.value = true
+  try {
+    const { downloadPdf } = await import('../composables/usePdfExport')
+    await downloadPdf(pdfMode.value)
+  } finally {
+    isGeneratingPdf.value = false
+  }
 }
 </script>
 
@@ -14,10 +20,10 @@ async function handleDownload() {
       class="bg-surface w-full max-w-[75vw] h-full max-h-[90vh] rounded-xl shadow-2xl flex flex-col border border-line overflow-hidden">
       <div class="h-14 bg-background border-b border-line px-5 flex justify-between items-center shrink-0">
         <h3 class="text-base font-bold text-foreground flex items-center gap-2">
-          <i class="ph-bold ph-file-pdf text-red-500 text-xl"></i> Vista Previa
+          <PhFilePdf weight="bold" class="text-red-500 text-xl" /> Vista Previa
         </h3>
         <button type="button" @click="closePreview" class="text-muted hover:text-foreground p-1 transition">
-          <i class="ph-bold ph-x text-xl"></i>
+          <PhX weight="bold" class="text-xl" />
         </button>
       </div>
       <div class="flex-1 bg-surface-alt w-full relative">
@@ -26,9 +32,9 @@ async function handleDownload() {
       <div class="h-16 bg-background border-t border-line px-5 flex justify-end items-center gap-4 shrink-0">
         <button type="button" @click="closePreview"
           class="px-5 py-2 text-sm font-medium text-muted hover:text-foreground transition">Cancelar</button>
-        <button type="button" @click="handleDownload"
-          class="px-5 py-2 text-sm font-bold text-slate-900 bg-utm-gold hover:bg-yellow-400 rounded-lg transition shadow-md flex items-center gap-2">
-          <i class="ph-bold ph-download-simple text-lg"></i> Confirmar y Descargar
+        <button type="button" @click="handleDownload" :disabled="isGeneratingPdf"
+          class="px-5 py-2 text-sm font-bold text-slate-900 bg-utm-gold hover:bg-yellow-400 rounded-lg transition shadow-md flex items-center gap-2 disabled:opacity-50">
+          <PhDownloadSimple weight="bold" class="text-lg" /> Confirmar y Descargar
         </button>
       </div>
     </div>

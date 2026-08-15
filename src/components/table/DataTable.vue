@@ -10,7 +10,7 @@ function handleClearAll() {
 </script>
 
 <template>
-  <main class="flex-1 p-4 lg:p-6 flex flex-col overflow-hidden relative">
+  <main class="flex-1 p-4 lg:p-6 flex flex-col lg:overflow-hidden relative">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
       <div>
         <h2 class="text-lg font-bold text-foreground">Tabulario de Control Diario</h2>
@@ -29,7 +29,7 @@ function handleClearAll() {
     </div>
 
     <div class="flex-1 border border-line bg-surface rounded-xl overflow-hidden flex flex-col shadow-lg">
-      <div class="overflow-x-auto overflow-y-auto flex-1">
+      <div class="overflow-x-auto lg:overflow-y-auto flex-1">
         <table class="w-full text-left border-collapse whitespace-nowrap min-w-200">
           <thead class="bg-background text-[11px] font-bold text-muted uppercase sticky top-0 z-10 border-b border-line">
             <tr>

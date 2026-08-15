@@ -1,4 +1,5 @@
 <script setup>
+import { PhWarningCircle, PhCheckCircle } from '@phosphor-icons/vue'
 import { toasts } from '../composables/useToast'
 </script>
 
@@ -6,7 +7,8 @@ import { toasts } from '../composables/useToast'
   <div id="toast-container">
     <TransitionGroup name="toast">
       <div v-for="t in toasts" :key="t.id" class="toast" :class="{ error: t.isError }">
-        <i class="ph-bold" :class="t.isError ? 'ph-warning-circle text-lg' : 'ph-check-circle text-lg'"></i>
+        <PhWarningCircle v-if="t.isError" weight="bold" class="text-lg" />
+        <PhCheckCircle v-else weight="bold" class="text-lg" />
         <span>{{ t.message }}</span>
       </div>
     </TransitionGroup>

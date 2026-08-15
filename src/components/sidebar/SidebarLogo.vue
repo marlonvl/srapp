@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from 'vue'
+import { PhImage, PhTrash, PhCaretDown, PhFloppyDisk } from '@phosphor-icons/vue'
 import { logoCompanyBase64, clearLogoCompany, hasStoredLogo } from '../../composables/useAppState'
 import { addToast } from '../../composables/useToast'
 import { useSavedFlash } from '../../composables/useSavedFlash'
+import { useSidebarAccordion } from '../../composables/useSidebarAccordion'
 
 const { justSaved, flash } = useSavedFlash()
+const { isOpen, toggle } = useSidebarAccordion(3)
 const pendingPreview = ref(null)
 
 function handleFileChange(e) {
@@ -37,30 +40,38 @@ function handleClear() {
 <template>
   <div class="bg-surface border rounded-lg p-4 transition-colors duration-500"
     :class="justSaved ? 'border-utm-green bg-utm-green/5' : 'border-line'">
-    <div class="flex justify-between items-center mb-3">
+    <div class="flex justify-between items-center mb-3 cursor-pointer lg:cursor-default select-none" @click="toggle"
+      role="button" :aria-expanded="isOpen">
       <h2 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-        <i class="ph-bold ph-image text-utm-gold text-lg"></i> 3. Logo Institución
+        <PhImage weight="bold" class="text-utm-gold text-lg" /> 3. Logo Institución
       </h2>
-      <button v-if="logoCompanyBase64" type="button" @click="handleClear" title="Quitar logo"
-        class="text-faint hover:text-red-500 p-1 transition">
-        <i class="ph-bold ph-trash text-sm"></i>
-      </button>
+      <div class="flex items-center gap-1">
+        <button v-if="logoCompanyBase64" type="button" @click.stop="handleClear" title="Quitar logo"
+          class="text-faint hover:text-red-500 p-1 transition">
+          <PhTrash weight="bold" class="text-sm" />
+        </button>
+        <PhCaretDown weight="bold" class="text-sm text-muted transition-transform lg:hidden"
+          :class="{ 'rotate-180': isOpen }" />
+      </div>
     </div>
 
+    <!-- Fuera del acordeón: la miniatura se ve siempre, aunque la sección esté colapsada en mobile. -->
     <div v-if="pendingPreview || logoCompanyBase64"
       class="mb-3 flex flex-col items-center justify-center bg-background border border-line rounded-lg p-3 h-16 gap-1">
       <img :src="pendingPreview || logoCompanyBase64" alt="Logo institución" class="max-h-10 max-w-full object-contain">
       <span v-if="pendingPreview" class="text-[9px] text-utm-gold font-semibold">Sin guardar</span>
     </div>
 
-    <input type="file" accept="image/*" @change="handleFileChange"
-      class="w-full text-xs text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-background file:text-utm-gold hover:file:bg-surface-alt cursor-pointer outline-none mb-3">
+    <div :class="isOpen ? 'block' : 'hidden lg:block'">
+      <input type="file" accept="image/*" @change="handleFileChange"
+        class="w-full text-xs text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-background file:text-utm-gold hover:file:bg-surface-alt cursor-pointer outline-none mb-3">
 
-    <button type="button" @click="handleSave"
-      class="w-full py-2 text-xs font-semibold text-utm-green bg-background border border-line hover:border-utm-green/50 hover:bg-utm-green/5 rounded transition-colors flex items-center justify-center gap-2">
-      <i class="ph-bold ph-floppy-disk text-base"></i> Guardar Logo
-    </button>
+      <button type="button" @click="handleSave"
+        class="w-full py-2 text-xs font-semibold text-utm-green bg-background border border-line hover:border-utm-green/50 hover:bg-utm-green/5 rounded transition-colors flex items-center justify-center gap-2">
+        <PhFloppyDisk weight="bold" class="text-base" /> Guardar Logo
+      </button>
 
-    <p class="text-[10px] text-faint mt-2 leading-relaxed">Coloca el logo de la institución donde realizas tus prácticas.</p>
+      <p class="text-[10px] text-faint mt-2 leading-relaxed">Coloca el logo de la institución donde realizas tus prácticas.</p>
+    </div>
   </div>
 </template>

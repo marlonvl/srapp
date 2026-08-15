@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { PhTrash } from '@phosphor-icons/vue'
 import { calculateHours } from '../../utils/dates'
 import { deleteRow } from '../../composables/useTableRows'
 
@@ -38,7 +39,7 @@ const hours = computed(() => calculateHours(props.row.entrada, props.row.salida)
     <td class="py-3 px-2 text-center">
       <button type="button" @click="deleteRow(row.id)" title="Eliminar fila"
         class="text-muted hover:text-red-500 transition p-1">
-        <i class="ph-bold ph-trash text-base"></i>
+        <PhTrash weight="bold" class="text-base" />
       </button>
     </td>
   </tr>

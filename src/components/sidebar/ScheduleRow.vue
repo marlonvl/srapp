@@ -1,4 +1,5 @@
 <script setup>
+import { PhTrash } from '@phosphor-icons/vue'
 import { WEEK_DAYS } from '../../utils/constants'
 import { removeScheduleRow } from '../../composables/useAppState'
 
@@ -17,7 +18,7 @@ defineProps({
     <input v-model="row.salida" type="time"
       class="field-input py-1.5 px-1 text-[11px] w-17.5 text-center bg-background">
     <button type="button" @click="removeScheduleRow(row.id)" class="text-faint hover:text-red-500 p-1.5 transition">
-      <i class="ph-bold ph-trash text-sm"></i>
+      <PhTrash weight="bold" class="text-sm" />
     </button>
   </div>
 </template>

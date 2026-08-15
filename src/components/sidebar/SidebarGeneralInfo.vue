@@ -1,9 +1,12 @@
 <script setup>
+import { PhIdentificationCard, PhTrash, PhCaretDown, PhFloppyDisk } from '@phosphor-icons/vue'
 import { formState, saveGeneralInfo, clearGeneralInfo, hasStoredGeneralInfo } from '../../composables/useAppState'
 import { addToast } from '../../composables/useToast'
 import { useSavedFlash } from '../../composables/useSavedFlash'
+import { useSidebarAccordion } from '../../composables/useSidebarAccordion'
 
 const { justSaved, flash } = useSavedFlash()
+const { isOpen, toggle } = useSidebarAccordion(1)
 
 function handleSave() {
   if (hasStoredGeneralInfo() && !confirm('Ya hay datos guardados para esta sección. ¿Sobrescribirlos?')) return
@@ -22,16 +25,21 @@ function handleClear() {
 <template>
   <div class="bg-surface border rounded-lg p-4 transition-colors duration-500"
     :class="justSaved ? 'border-utm-green bg-utm-green/5' : 'border-line'">
-    <div class="flex justify-between items-center mb-3">
+    <div class="flex justify-between items-center mb-3 cursor-pointer lg:cursor-default select-none" @click="toggle"
+      role="button" :aria-expanded="isOpen">
       <h2 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-        <i class="ph-bold ph-identification-card text-utm-gold text-lg"></i> 1. Información General
+        <PhIdentificationCard weight="bold" class="text-utm-gold text-lg" /> 1. Información General
       </h2>
-      <button type="button" @click="handleClear" title="Limpiar esta sección"
-        class="text-faint hover:text-red-500 p-1 transition">
-        <i class="ph-bold ph-trash text-sm"></i>
-      </button>
+      <div class="flex items-center gap-1">
+        <button type="button" @click.stop="handleClear" title="Limpiar esta sección"
+          class="text-faint hover:text-red-500 p-1 transition">
+          <PhTrash weight="bold" class="text-sm" />
+        </button>
+        <PhCaretDown weight="bold" class="text-sm text-muted transition-transform lg:hidden"
+          :class="{ 'rotate-180': isOpen }" />
+      </div>
     </div>
-    <div class="space-y-3">
+    <div class="space-y-3" :class="isOpen ? 'block' : 'hidden lg:block'">
       <div class="grid grid-cols-3 gap-3">
         <div class="col-span-2">
           <label class="block text-xs font-medium text-muted mb-1">Estudiante</label>
@@ -67,7 +75,7 @@ function handleClear() {
 
       <button type="button" @click="handleSave"
         class="w-full py-2 mt-2 text-xs font-semibold text-utm-green bg-background border border-line hover:border-utm-green/50 hover:bg-utm-green/5 rounded transition-colors flex items-center justify-center gap-2">
-        <i class="ph-bold ph-floppy-disk text-base"></i> Guardar Datos
+        <PhFloppyDisk weight="bold" class="text-base" /> Guardar Datos
       </button>
     </div>
   </div>

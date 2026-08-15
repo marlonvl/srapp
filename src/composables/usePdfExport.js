@@ -160,6 +160,8 @@ async function buildDocument(mode) {
   autoTable(doc, {
     startY: 52,
     margin: { top: 52, left: 14, right: 14, bottom: 25 },
+    // 'avoid' evita partir una fila entre dos páginas (dejaba una tira vacía como resto de la fila anterior).
+    rowPageBreak: 'avoid',
     head: [head],
     body: getPdfTableData(mode),
     theme: 'grid',

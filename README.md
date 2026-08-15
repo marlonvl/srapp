@@ -10,7 +10,7 @@ Sistema de registro de asistencias para Prácticas Pre Profesionales de la UTM.
 ## Desarrollo
 
 ```bash
-ppnpm install
+pnpm install
 pnpm run dev
 ```
 

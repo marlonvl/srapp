@@ -1,4 +1,4 @@
-import { formState, scheduleDays, tableRows, logoCompanyBase64 } from './useAppState'
+import { formState, scheduleDays, tableRows, logoCompanyBase64, saveGeneralInfo, saveScheduleInfo } from './useAppState'
 import { addToast } from './useToast'
 import { calculateHours, isValidISODate } from '../utils/dates'
 import { GENERAL_INFO_STORAGE_FIELDS } from '../utils/constants'
@@ -72,6 +72,9 @@ export function importBackupFromText(text) {
     GENERAL_INFO_STORAGE_FIELDS.forEach((f) => {
       if (typeof data.infoGeneral[f] === 'string') formState[f] = data.infoGeneral[f]
     })
+    // infoGeneral y cronograma solo tienen botón de guardado manual (a diferencia de filas/logo,
+    // que se autoguardan): sin este llamado, lo importado se veía en pantalla pero no sobrevivía un refresco.
+    saveGeneralInfo()
   }
   if (data.cronograma && typeof data.cronograma === 'object') {
     if (typeof data.cronograma.startDate === 'string') formState.startDate = data.cronograma.startDate
@@ -81,6 +84,7 @@ export function importBackupFromText(text) {
         id: newId(), dia: d.dia, entrada: d.entrada, salida: d.salida,
       }))
     }
+    saveScheduleInfo()
   }
   if (typeof data.logoCompanyBase64 === 'string') logoCompanyBase64.value = data.logoCompanyBase64
 

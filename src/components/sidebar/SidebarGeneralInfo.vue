@@ -1,6 +1,8 @@
 <script setup>
-import { PhIdentificationCard, PhTrash, PhCaretDown, PhFloppyDisk } from '@phosphor-icons/vue'
-import { formState, saveGeneralInfo, clearGeneralInfo, hasStoredGeneralInfo } from '../../composables/useAppState'
+import { PhIdentificationCard, PhTrash, PhCaretDown, PhFloppyDisk, PhCheckCircle } from '@phosphor-icons/vue'
+import {
+  formState, saveGeneralInfo, clearGeneralInfo, hasStoredGeneralInfo, isGeneralInfoSaved,
+} from '../../composables/useAppState'
 import { addToast } from '../../composables/useToast'
 import { useSavedFlash } from '../../composables/useSavedFlash'
 import { useSidebarAccordion } from '../../composables/useSidebarAccordion'
@@ -29,6 +31,10 @@ function handleClear() {
       role="button" :aria-expanded="isOpen">
       <h2 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
         <PhIdentificationCard weight="bold" class="text-utm-gold text-lg" /> 1. Información General
+        <span v-if="isGeneralInfoSaved"
+          class="normal-case text-[9px] font-semibold text-utm-green bg-utm-green/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+          <PhCheckCircle weight="bold" /> Guardado
+        </span>
       </h2>
       <div class="flex items-center gap-1">
         <button type="button" @click.stop="handleClear" title="Limpiar esta sección"
@@ -43,7 +49,7 @@ function handleClear() {
       <div class="grid grid-cols-3 gap-3">
         <div class="col-span-2">
           <label class="block text-xs font-medium text-muted mb-1">Estudiante</label>
-          <input v-model="formState.studentName" type="text" placeholder="Nombre completo del estudiante"
+          <input v-model="formState.studentName" type="text" placeholder="Ej: Pérez García Juan Carlos"
             class="field-input">
         </div>
         <div>
@@ -63,7 +69,7 @@ function handleClear() {
         </div>
         <div>
           <label class="block text-xs font-medium text-muted mb-1">Supervisor Institucional (Con Título)</label>
-          <input v-model="formState.supervisorName" type="text" placeholder="Nombre y título del supervisor"
+          <input v-model="formState.supervisorName" type="text" placeholder="Ej: Ing. Pérez García Juan Carlos"
             class="field-input">
         </div>
         <div>

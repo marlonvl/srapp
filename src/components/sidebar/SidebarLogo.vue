@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { PhImage, PhTrash, PhCaretDown, PhFloppyDisk } from '@phosphor-icons/vue'
+import { ref, computed } from 'vue'
+import { PhImage, PhTrash, PhCaretDown, PhFloppyDisk, PhCheckCircle } from '@phosphor-icons/vue'
 import { logoCompanyBase64, clearLogoCompany, hasStoredLogo } from '../../composables/useAppState'
 import { addToast } from '../../composables/useToast'
 import { useSavedFlash } from '../../composables/useSavedFlash'
@@ -9,6 +9,8 @@ import { useSidebarAccordion } from '../../composables/useSidebarAccordion'
 const { justSaved, flash } = useSavedFlash()
 const { isOpen, toggle } = useSidebarAccordion(3)
 const pendingPreview = ref(null)
+// El logo se autoguarda al asignarlo (sin botón "Guardar" con estado propio): "guardado" = ya asignado.
+const isLogoSaved = computed(() => !!logoCompanyBase64.value && !pendingPreview.value)
 
 function handleFileChange(e) {
   const file = e.target.files[0]
@@ -44,6 +46,10 @@ function handleClear() {
       role="button" :aria-expanded="isOpen">
       <h2 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
         <PhImage weight="bold" class="text-utm-gold text-lg" /> 3. Logo Institución
+        <span v-if="isLogoSaved"
+          class="normal-case text-[9px] font-semibold text-utm-green bg-utm-green/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+          <PhCheckCircle weight="bold" /> Guardado
+        </span>
       </h2>
       <div class="flex items-center gap-1">
         <button v-if="logoCompanyBase64" type="button" @click.stop="handleClear" title="Quitar logo"

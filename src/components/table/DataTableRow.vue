@@ -29,7 +29,7 @@ const hours = computed(() => calculateHours(props.row.entrada, props.row.salida)
     </td>
     <td class="py-3 px-2 text-center font-bold text-utm-green">{{ hours }}</td>
     <td class="py-3 px-2">
-      <textarea v-model="row.actividad" rows="1" placeholder="Actividad..."
+      <textarea v-model="row.actividad" rows="2" placeholder="Actividad..."
         class="w-full bg-transparent border-none outline-none text-xs text-foreground px-2 py-1 resize-y focus:bg-surface-alt rounded leading-relaxed"></textarea>
     </td>
     <td class="py-3 px-2">

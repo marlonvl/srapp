@@ -13,6 +13,9 @@ const DEFAULT_FORM_STATE = {
 
 export const formState = reactive({ ...DEFAULT_FORM_STATE })
 
+export const isGeneralInfoSaved = ref(false)
+export const isScheduleSaved = ref(false)
+
 export const scheduleDays = ref([])
 export const tableRows = ref([])
 export const logoCompanyBase64 = ref(null)
@@ -73,10 +76,14 @@ export function loadFromLocalStorage() {
 
   const savedMode = localStorage.getItem('pdfMode')
   if (savedMode) pdfMode.value = savedMode
+
+  isGeneralInfoSaved.value = hasStoredGeneralInfo()
+  isScheduleSaved.value = hasStoredSchedule()
 }
 
 export function saveGeneralInfo() {
   GENERAL_INFO_STORAGE_FIELDS.forEach((f) => localStorage.setItem(f, formState[f]))
+  isGeneralInfoSaved.value = true
 }
 
 export function saveScheduleInfo() {
@@ -86,6 +93,7 @@ export function saveScheduleInfo() {
     'scheduleData',
     JSON.stringify(scheduleDays.value.map((d) => ({ day: d.dia, in: d.entrada, out: d.salida })))
   )
+  isScheduleSaved.value = true
 }
 
 // Para confirmar antes de sobrescribir: ¿ya había algo guardado para este bloque?
@@ -118,6 +126,7 @@ export function clearGeneralInfo() {
     fase: 'I',
   })
   GENERAL_INFO_STORAGE_FIELDS.forEach((f) => localStorage.removeItem(f))
+  isGeneralInfoSaved.value = false
 }
 
 export function clearScheduleInfo() {
@@ -127,6 +136,7 @@ export function clearScheduleInfo() {
   localStorage.removeItem('startDate')
   localStorage.removeItem('endDate')
   localStorage.removeItem('scheduleData')
+  isScheduleSaved.value = false
 }
 
 export function clearLogoCompany() {
@@ -143,4 +153,6 @@ export function clearAllData() {
   pdfMode.value = 'digital'
   GENERAL_INFO_STORAGE_FIELDS.forEach((f) => localStorage.removeItem(f))
   ;['startDate', 'endDate', 'scheduleData'].forEach((k) => localStorage.removeItem(k))
+  isGeneralInfoSaved.value = false
+  isScheduleSaved.value = false
 }

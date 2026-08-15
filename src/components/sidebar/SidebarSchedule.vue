@@ -1,7 +1,8 @@
 <script setup>
-import { PhCalendar, PhTrash, PhCaretDown, PhPlus } from '@phosphor-icons/vue'
+import { PhCalendar, PhTrash, PhCaretDown, PhPlus, PhCheckCircle } from '@phosphor-icons/vue'
 import {
   formState, scheduleDays, addScheduleRow, saveScheduleInfo, clearScheduleInfo, hasStoredSchedule,
+  isScheduleSaved,
 } from '../../composables/useAppState'
 import { generateRowsFromDates } from '../../composables/useTableRows'
 import { addToast } from '../../composables/useToast'
@@ -33,6 +34,10 @@ function handleClear() {
       role="button" :aria-expanded="isOpen">
       <h2 class="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
         <PhCalendar weight="bold" class="text-utm-gold text-lg" /> 2. Cronograma Base
+        <span v-if="isScheduleSaved"
+          class="normal-case text-[9px] font-semibold text-utm-green bg-utm-green/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+          <PhCheckCircle weight="bold" /> Guardado
+        </span>
       </h2>
       <div class="flex items-center gap-1">
         <button type="button" @click.stop="handleClear" title="Limpiar esta sección"

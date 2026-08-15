@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SRAPP | Sistema de Registro de Asistencias PPP - UTM</title>
+    <meta name="description"
+      content="Genera la ficha de asistencia de Prácticas Pre Profesionales de la UTM, en blanco para imprimir o lista para firma electrónica. Sin cuentas: tus datos se guardan solo en tu navegador." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SRAPP | Sistema de Registro de Asistencias PPP - UTM" />
+    <meta property="og:description"
+      content="Genera la ficha de asistencia de Prácticas Pre Profesionales de la UTM, en blanco para imprimir o lista para firma electrónica. Sin cuentas: tus datos se guardan solo en tu navegador." />
+    <meta property="og:locale" content="es_EC" />
+    <script>
+      // Aplica el tema antes del primer paint para evitar el parpadeo claro→oscuro (o viceversa).
+      (function () {
+        var stored = localStorage.getItem('theme')
+        var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      })()
+    </script>
+  </head>
+  <body class="h-screen flex flex-col overflow-hidden text-sm antialiased">
+    <div id="app" class="contents"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

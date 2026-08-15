@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* v4 ya no lee darkMode:'class' de un JS config; sin esto "dark:" seguiría prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  /* Marca institucional: igual en ambos temas */
+  --color-utm-green: #009933;
+  --color-utm-gold: #FFCC33;
+
+  /* Tokens semánticos — valores claros por defecto, sobrescritos bajo .dark abajo */
+  --color-background: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-surface-alt: #eef2f1;
+  --color-foreground: #1c2624;
+  --color-muted: #52625e;
+  --color-faint: #8a9995;
+  --color-line: #dde5e3;
+  --color-line-strong: #b7c4c1;
+}
+
+.dark {
+  --color-background: #151e1d;
+  --color-surface: #2b3635;
+  --color-surface-alt: #151e1d;
+  --color-foreground: #f5f8f7;
+  --color-muted: #96b2ac;
+  --color-faint: #70918b;
+  --color-line: #384d4a;
+  --color-line-strong: #70918b;
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-faint);
+  }
+
+  /* Tailwind quitó el cursor:pointer por defecto de los botones; lo restauramos para toda la app */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@layer components {
+  .field-input {
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--color-line);
+    color: var(--color-foreground);
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 10px 12px;
+    width: 100%;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .field-input:focus {
+    border-color: var(--color-line-strong);
+    box-shadow: 0 0 0 1px var(--color-line-strong);
+  }
+
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
+    color: var(--color-foreground);
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toast.error {
+    border-color: #ef4444;
+    color: #dc2626;
+  }
+}
+
+.dark .toast.error {
+  color: #fca5a5;
+}
+
+/* Transición de entrada/salida de toasts vía <TransitionGroup name="toast"> */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.25s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}

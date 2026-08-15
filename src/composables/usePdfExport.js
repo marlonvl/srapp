@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
 import { formState, logoCompanyBase64 } from './useAppState'
@@ -6,9 +5,7 @@ import { getPdfTableData, totalHours } from './useTableRows'
 import { addToast } from './useToast'
 import { formatDateDMY } from '../utils/dates'
 import { LOGO_UTM_URL, WATERMARK_URL, UTM_GREEN, UTM_GOLD } from '../utils/constants'
-
-export const isPreviewOpen = ref(false)
-export const previewUrl = ref('')
+import { isPreviewOpen, previewUrl } from './usePdfState'
 
 // 'digital': sin columna de firma diaria (la firma de cierre ya certifica todo el documento
 // cuando se firma electrónicamente). 'print': con columna de firma diaria vacía, para tinta.
@@ -226,11 +223,6 @@ export async function previewPdf(mode) {
   const doc = await buildDocument(mode)
   previewUrl.value = doc.output('bloburl')
   isPreviewOpen.value = true
-}
-
-export function closePreview() {
-  isPreviewOpen.value = false
-  previewUrl.value = ''
 }
 
 export async function downloadPdf(mode) {

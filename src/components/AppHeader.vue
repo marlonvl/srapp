@@ -1,7 +1,6 @@
 <script setup>
 import { pdfMode, clearAllData } from '../composables/useAppState'
 import { totalHours } from '../composables/useTableRows'
-import { previewPdf, downloadPdf } from '../composables/usePdfExport'
 import { isDark, toggleTheme } from '../composables/useTheme'
 import { addToast } from '../composables/useToast'
 
@@ -9,6 +8,17 @@ function handleClearAll() {
   if (!confirm('¿Limpiar TODOS los datos? Esto borra la información general, el cronograma, la tabla y el logo.')) return
   clearAllData()
   addToast('Todos los datos fueron limpiados.')
+}
+
+// jspdf/jspdf-autotable son pesados: se cargan solo al usarlos, no en el bundle inicial.
+async function handlePreview() {
+  const { previewPdf } = await import('../composables/usePdfExport')
+  previewPdf(pdfMode.value)
+}
+
+async function handleDownload() {
+  const { downloadPdf } = await import('../composables/usePdfExport')
+  downloadPdf(pdfMode.value)
 }
 </script>
 
@@ -56,11 +66,11 @@ function handleClearAll() {
         </button>
       </div>
 
-      <button type="button" @click="previewPdf(pdfMode)"
+      <button type="button" @click="handlePreview"
         class="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-foreground bg-surface-alt hover:bg-foreground/5 border border-line rounded-lg transition-all shadow-md">
         <i class="ph-bold ph-eye text-base"></i> Vista Previa
       </button>
-      <button type="button" @click="downloadPdf(pdfMode)"
+      <button type="button" @click="handleDownload"
         class="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-900 bg-utm-gold hover:bg-yellow-400 rounded-lg transition-all shadow-md active:scale-95">
         <i class="ph-bold ph-download-simple text-base"></i> Descargar PDF
       </button>

@@ -1,6 +1,11 @@
 <script setup>
-import { isPreviewOpen, previewUrl, closePreview, downloadPdf } from '../composables/usePdfExport'
+import { isPreviewOpen, previewUrl, closePreview } from '../composables/usePdfState'
 import { pdfMode } from '../composables/useAppState'
+
+async function handleDownload() {
+  const { downloadPdf } = await import('../composables/usePdfExport')
+  downloadPdf(pdfMode.value)
+}
 </script>
 
 <template>
@@ -21,7 +26,7 @@ import { pdfMode } from '../composables/useAppState'
       <div class="h-16 bg-background border-t border-line px-5 flex justify-end items-center gap-4 shrink-0">
         <button type="button" @click="closePreview"
           class="px-5 py-2 text-sm font-medium text-muted hover:text-foreground transition">Cancelar</button>
-        <button type="button" @click="downloadPdf(pdfMode)"
+        <button type="button" @click="handleDownload"
           class="px-5 py-2 text-sm font-bold text-slate-900 bg-utm-gold hover:bg-yellow-400 rounded-lg transition shadow-md flex items-center gap-2">
           <i class="ph-bold ph-download-simple text-lg"></i> Confirmar y Descargar
         </button>

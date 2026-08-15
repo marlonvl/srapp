@@ -12,3 +12,6 @@ export const DAY_NAME_TO_NUMBER = {
 }
 
 export const GENERAL_INFO_STORAGE_FIELDS = ['studentName', 'facultyName', 'companyName', 'supervisorName', 'fase']
+
+// Horas totales exigidas por la UTM para certificar cada fase de PPP.
+export const REQUIRED_HOURS_BY_FASE = { I: 96, II: 144 }

@@ -4,7 +4,8 @@ import { formState, logoCompanyBase64 } from './useAppState'
 import { getPdfTableData, totalHours } from './useTableRows'
 import { addToast } from './useToast'
 import { formatDateDMY } from '../utils/dates'
-import { LOGO_UTM_URL, WATERMARK_URL, UTM_GREEN, UTM_GOLD } from '../utils/constants'
+import { toTitleCase } from '../utils/text'
+import { LOGO_UTM_URL, WATERMARK_URL, UTM_GREEN, UTM_GOLD, REQUIRED_HOURS_BY_FASE } from '../utils/constants'
 import { isPreviewOpen, previewUrl } from './usePdfState'
 
 // 'digital': sin columna de firma diaria (la firma de cierre ya certifica todo el documento
@@ -75,13 +76,14 @@ async function buildDocument(mode) {
   const pW = doc.internal.pageSize.width
   const pH = doc.internal.pageSize.height
 
-  const student = (formState.studentName || 'ESTUDIANTE').toUpperCase()
-  const faculty = (formState.facultyName || 'FACULTAD').toUpperCase()
-  const supervisor = (formState.supervisorName || 'SUPERVISOR').toUpperCase()
-  const company = (formState.companyName || 'INSTITUCIÓN').toUpperCase()
+  const student = toTitleCase(formState.studentName || 'Estudiante')
+  const faculty = toTitleCase(formState.facultyName || 'Facultad')
+  const supervisor = toTitleCase(formState.supervisorName || 'Supervisor')
+  const company = toTitleCase(formState.companyName || 'Institución')
   const fase = formState.fase || 'I'
   const period = `${formatDateDMY(formState.startDate)} - ${formatDateDMY(formState.endDate)}`
   const totHrs = totalHours.value
+  const requiredHours = REQUIRED_HOURS_BY_FASE[fase] ?? REQUIRED_HOURS_BY_FASE.I
 
   const [imgUTM, imgWater, imgComp] = await Promise.all([
     loadImage(LOGO_UTM_URL),
@@ -138,9 +140,9 @@ async function buildDocument(mode) {
     doc.text(period, pW - 54, 34)
 
     doc.setFont('helvetica', 'bold')
-    doc.text('Total Horas Registradas:', pW - 70, 40)
+    doc.text('Horas Registradas:', pW - 70, 40)
     doc.setTextColor(...UTM_GREEN)
-    doc.text(`${totHrs} Horas`, pW - 31, 40)
+    doc.text(`${totHrs}/${requiredHours} Horas`, pW - 39, 40)
 
     doc.setTextColor(40)
     doc.setFont('helvetica', 'bold')
@@ -151,7 +153,7 @@ async function buildDocument(mode) {
     doc.setFontSize(8)
     doc.setFont('helvetica', 'italic')
     doc.setTextColor(120)
-    doc.text('SRAPP - Sistema de Registro de Asistencias de Prácticas Pre Profesionales - UTM', 14, pH - 8)
+    doc.text('Registro de Asistencias de Prácticas Pre Profesionales - UTM', 14, pH - 8)
     doc.text(`Página ${data.pageNumber}`, pW - 20, pH - 8)
   }
 
@@ -159,7 +161,9 @@ async function buildDocument(mode) {
 
   autoTable(doc, {
     startY: 52,
-    margin: { top: 52, left: 14, right: 14, bottom: 25 },
+    // bottom:18 deja el presupuesto vertical justo para que quepan 10 filas reales (con texto
+    // de Actividad envuelto a 2 líneas) sin partirse; con 25 solo entraban 9 y sobraba un hueco.
+    margin: { top: 52, left: 14, right: 14, bottom: 18 },
     // 'avoid' evita partir una fila entre dos páginas (dejaba una tira vacía como resto de la fila anterior).
     rowPageBreak: 'avoid',
     head: [head],

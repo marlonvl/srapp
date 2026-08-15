@@ -110,7 +110,7 @@ async function buildDocument(mode) {
     doc.text('UNIVERSIDAD TÉCNICA DE MANABÍ', pW / 2, 9, { align: 'center' })
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
-    doc.text(faculty, pW / 2, 14, { align: 'center' })
+    doc.text(faculty.toUpperCase(), pW / 2, 14, { align: 'center' })
     doc.setFontSize(11)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(...UTM_GOLD)

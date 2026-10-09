@@ -36,6 +36,10 @@ const PDF_MODES = {
   },
 }
 
+// Resolución de impresión estándar: más píxeles no se aprecian en papel y solo engordan el PDF.
+const PDF_IMAGE_DPI = 300
+const MM_PER_INCH = 25.4
+
 function loadImage(url) {
   return new Promise((resolve) => {
     const img = new Image()
@@ -46,15 +50,37 @@ function loadImage(url) {
   })
 }
 
-function drawImageProp(doc, imgElement, x, y, maxW, maxH, align = 'left', opacity = 1) {
-  if (!imgElement) return
-  const ratio = imgElement.width / imgElement.height
+// jsPDF incrusta cada píxel recibido aunque la imagen ocupe pocos mm en la hoja: se reescala al tamaño impreso.
+async function loadPdfImage(url, maxW, maxH, dpi = PDF_IMAGE_DPI) {
+  const img = await loadImage(url)
+  if (!img?.width || !img.height) return null
+  const ratio = img.width / img.height
   let w = maxW
   let h = w / ratio
   if (h > maxH) {
     h = maxH
     w = h * ratio
   }
+  const scale = Math.min(1, ((w / MM_PER_INCH) * dpi) / img.width)
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.round(img.width * scale))
+  canvas.height = Math.max(1, Math.round(img.height * scale))
+  const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+  // Un logo subido en JPEG suele ser una foto: pasado a PNG pesaría varias veces más.
+  const isJpeg = url.startsWith('data:image/jpeg')
+  return {
+    data: canvas.toDataURL(isJpeg ? 'image/jpeg' : 'image/png', 0.92),
+    format: isJpeg ? 'JPEG' : 'PNG',
+    w,
+    h,
+  }
+}
+
+function drawPdfImage(doc, image, x, y, align = 'left', opacity = 1) {
+  if (!image) return
+  const { w, h } = image
   let finalX = x
   let finalY = y
   if (align === 'center') {
@@ -67,12 +93,13 @@ function drawImageProp(doc, imgElement, x, y, maxW, maxH, align = 'left', opacit
     doc.saveGraphicsState()
     doc.setGState(new doc.GState({ opacity }))
   }
-  doc.addImage(imgElement, 'PNG', finalX, finalY, w, h)
+  doc.addImage(image.data, image.format, finalX, finalY, w, h)
   if (opacity !== 1) doc.restoreGraphicsState()
 }
 
 async function buildDocument(mode) {
-  const doc = new jsPDF('l', 'mm', 'a4')
+  // Sin compress, jsPDF guarda texto e imágenes sin comprimir (un PNG de 300 KB ocupaba ~12 MB).
+  const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4', compress: true })
   const pW = doc.internal.pageSize.width
   const pH = doc.internal.pageSize.height
 
@@ -86,23 +113,24 @@ async function buildDocument(mode) {
   const requiredHours = REQUIRED_HOURS_BY_FASE[fase] ?? REQUIRED_HOURS_BY_FASE.I
 
   const [imgUTM, imgWater, imgComp] = await Promise.all([
-    loadImage(LOGO_UTM_URL),
-    loadImage(WATERMARK_URL),
-    logoCompanyBase64.value ? loadImage(logoCompanyBase64.value) : Promise.resolve(null),
+    loadPdfImage(LOGO_UTM_URL, 47, 18),
+    // Al 3% de opacidad no se distingue más detalle: a 150 ppp pesa cuatro veces menos que a 300.
+    loadPdfImage(WATERMARK_URL, 90, 90, 150),
+    logoCompanyBase64.value ? loadPdfImage(logoCompanyBase64.value, 47, 18) : Promise.resolve(null),
   ])
 
   const drawBaseTemplate = (data) => {
     // Ancla al centro del área útil bajo la franja de encabezado (25mm), no al centro de toda la página.
     const waterY = 25 + (pH - 25) / 2
-    if (imgWater) drawImageProp(doc, imgWater, pW / 2, waterY, 90, 90, 'center', 0.03)
+    if (imgWater) drawPdfImage(doc, imgWater, pW / 2, waterY, 'center', 0.03)
 
     doc.setFillColor(...UTM_GREEN)
     doc.rect(0, 0, pW, 22, 'F')
     doc.setFillColor(...UTM_GOLD)
     doc.rect(0, 22, pW, 3, 'F')
 
-    if (imgUTM) drawImageProp(doc, imgUTM, 14, 2, 47, 18, 'left')
-    if (imgComp) drawImageProp(doc, imgComp, pW - 14, 2, 47, 18, 'right')
+    if (imgUTM) drawPdfImage(doc, imgUTM, 14, 2, 'left')
+    if (imgComp) drawPdfImage(doc, imgComp, pW - 14, 2, 'right')
 
     doc.setTextColor(255)
     doc.setFont('helvetica', 'bold')
